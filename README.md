@@ -4,7 +4,7 @@ Arduino library for making your old Atari/Amiga/C64 joystick appear as a USB HID
 
 To make this all work, you need some hookup wires and a male DB-9 connector (it's the 9-pin PC serial connector), which you can source from an old computer or serial cable, or buy online. Optional extras are some dupont male/female pins (depenting on how your Arduino board is set up) and a soldering iron.
 
-Looking into the male DB-9 connector, the pin numbering is like this:
+With the male DB-9 connector pins facing you, the pin numbering is like this:
 ![Header Picture](diagram.png)
 
 If you're just using the example sketch from the library, connect the following DB-9 pins to the corresponding digital pins on your Arduino like so:
