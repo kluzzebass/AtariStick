@@ -13,7 +13,7 @@ If you're just using the example sketch from the library, connect the following 
 * DB-9 pin 2 (down) to Arduino D1.
 * DB-9 pin 3 (left) to Arduino D2.
 * DB-9 pin 4 (right) to Arduino D3.
-* DB-9 pin 5 (+5v) to Arduino +5v VCC (optional; sometimes required by hardware autofire).
+* DB-9 pin 5 is not used for joysticks.
 * DB-9 pin 6 (button1) to Arduino D4.
 * DB-9 pin 7 (+5v) to Arduino +5v VCC (optional; sometimes required by hardware autofire).
 * DB-9 pin 8 (GND) to Arduino GND.
