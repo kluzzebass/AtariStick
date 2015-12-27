@@ -14,10 +14,10 @@ If you're just using the example sketch from the library, connect the following 
 * DB-9 pin 3 (left) to Arduino D2.
 * DB-9 pin 4 (right) to Arduino D3.
 * DB-9 pin 5 (+5v) to Arduino +5v VCC (optional; sometimes required by hardware autofire).
-* DB-9 pin 6 (button1) to Arduino D4 (optional; only some joysticks use this).
+* DB-9 pin 6 (button1) to Arduino D4.
 * DB-9 pin 7 (+5v) to Arduino +5v VCC (optional; sometimes required by hardware autofire).
 * DB-9 pin 8 (GND) to Arduino GND.
-* DB-9 pin 9 (button2) to Arduino D5.
+* DB-9 pin 9 (button2) to Arduino D5 (optional; only some joysticks use this).
 
 As you can see, a bare minimum hookup uses pins 1, 2, 3, 4, 6 and 8. Note that even with this minimum hookup the autofire on my Zipstick works, so I'm assuming it sources its power from other pins.
 
