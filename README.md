@@ -1,5 +1,7 @@
 # AtariStick
 
+**Note: This library relies on the Debounce library. Make sure you grab both!**
+
 Arduino library for making your old Atari/C64/Amiga joystick appear as a USB HID joystick to a modern PC/Mac/Raspberry Pi/etc. It's been tested on an Arduino Leonardo and a SparkFun Pro Micro clone, and it should work on any Arduino clone with a ATMega32U4 or similar (with built in USB, not FTDI or CH340/341). At the time of writing, the library only supports one joystick.
 
 To make this all work, you need some hookup wires and a male DB-9 connector (it's the 9-pin PC serial connector), which you can source from an old computer or serial cable, or buy online. Optional extras are some dupont male/female pins (depenting on how your Arduino board is set up) and a soldering iron.
