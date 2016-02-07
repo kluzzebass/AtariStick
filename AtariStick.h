@@ -92,23 +92,6 @@ private:
 
 	ataristick_report_t report;
 
-
-	// Which joystick pin is connected to which arduino pin
-	byte pinUp;
-	byte pinDown;
-	byte pinLeft;
-	byte pinRight;
-	byte pinBtn1;
-	byte pinBtn2;
-
-	// List of current joystick states
-	Debouncer up;
-	Debouncer down;
-	Debouncer left;
-	Debouncer right;
-	Debouncer btn1;
-	Debouncer btn2;
-
 	void sendState();
 
 public:
