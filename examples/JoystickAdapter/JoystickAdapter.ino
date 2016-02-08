@@ -34,8 +34,8 @@
 #define PIN_BTN2 5
 
 
-// Use a 1ms debounce timeout. If you still experience contact bounce, increase this delay.
-AtariStick stick = AtariStick(1);
+// Use a 1ms (1000μs) debounce timeout. If you still experience contact bounce, increase this delay.
+AtariStick stick = AtariStick(1000);
 
 void setup()
 {

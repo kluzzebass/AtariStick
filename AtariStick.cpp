@@ -28,7 +28,7 @@
 #include <AtariStick.h>
 
 // Constructor, takes a contact debounce timeout as the only parameter.
-AtariStick::AtariStick(int debounceDelay)
+AtariStick::AtariStick(unsigned long debounceDelay)
 {
 	delay = debounceDelay;
 
@@ -52,7 +52,7 @@ void AtariStick::setPin(StickFunc func, int pin)
 }
 
 // Assign a digital input pin to a joystick function, and also set an individual contact debounce timeout.
-void AtariStick::setPin(StickFunc func, int pin, int debounceDelay)
+void AtariStick::setPin(StickFunc func, int pin, unsigned long debounceDelay)
 {
 	setPin(func, pin);
 	states[func].delay = debounceDelay;

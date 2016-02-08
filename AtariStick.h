@@ -83,7 +83,7 @@ class AtariStick
 
 private:
 
-	int delay; // Default debounce delay
+	unsigned long delay; // Default debounce delay in microseconds
 	
 	byte changeMask; // Contains a bit mask of changed pin states
 
@@ -96,10 +96,10 @@ private:
 
 public:
 	
-	AtariStick(int debounceDelay);
+	AtariStick(unsigned long debounceDelay);
 	
 	void setPin(StickFunc func, int pin);
-	void setPin(StickFunc func, int pin, int debounceDelay);
+	void setPin(StickFunc func, int pin, unsigned long debounceDelay);
 	
 	void update();
 
