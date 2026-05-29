@@ -2,7 +2,7 @@
 
 **Note: This library relies on the Debounce library. Make sure you grab both!**
 
-Arduino library for making your old Atari/C64/Amiga joystick appear as a USB HID joystick to a modern PC/Mac/Raspberry Pi/etc. It's been tested on an Arduino Leonardo and a SparkFun Pro Micro clone, and it should work on any Arduino clone with a ATMega32U4 or similar (with built in USB, not FTDI or CH340/341). At the time of writing, the library only supports one joystick.
+Arduino library for making your old Atari/C64/Amiga joystick appear as a USB HID joystick to a modern PC/Mac/Raspberry Pi/etc. It's been tested on an Arduino Leonardo and a SparkFun Pro Micro clone, and it should work on any Arduino clone with a ATMega32U4 or similar (with built in USB, not FTDI or CH340/341). It supports one or more joysticks from a single board — each stick is presented to the host as its own HID joystick.
 
 To make this all work, you need some hookup wires and a male DB-9 connector (it's the 9-pin PC serial connector), which you can source from an old computer or serial cable, or buy online. Optional extras are some dupont male/female pins (depenting on how your Arduino board is set up) and a soldering iron.
 
@@ -31,6 +31,42 @@ Upload the example sketch to your Arduino, plug the joystick in, and Bob's your 
 
 The end result might look like this:
 ![Header Picture](joystick.png)
+
+## Two joysticks at once
+
+A single board can drive more than one joystick. Each `AtariStick` instance registers as its own USB HID interface, so the host enumerates each stick as a separate joystick. Just declare one instance per stick and give each its own set of digital pins:
+
+```cpp
+AtariStick stick1 = AtariStick(1000);
+AtariStick stick2 = AtariStick(1000);
+```
+
+Wire the second joystick to a second DB-9 connector and a free set of digital pins. The `DualJoystickAdapter` example uses these pins:
+
+| Function | DB-9 pin | Stick 1  | Stick 2    |
+|----------|----------|----------|------------|
+| Up       | 1        | D0 (RXI) | D6         |
+| Down     | 2        | D1 (TXO) | D7         |
+| Left     | 3        | D2       | D8         |
+| Right    | 4        | D3       | D9         |
+| Button 1 | 6        | D4       | D10        |
+| Button 2 | 9        | D5       | D16 (MOSI) |
+| GND      | 8        | GND      | GND        |
+
+Both DB-9 grounds share the Arduino GND rail. DB-9 pin 5 is unused, and pin 7 (+5V) is optional (only some joysticks need it for hardware autofire) — same as the single-stick hookup above.
+
+**This table is for the SparkFun Pro Micro pinout, not the Leonardo.** The silkscreen labels and the D16 mapping below are Pro Micro specific:
+
+* On the silkscreen, `RXI` is D0 and `TXO` is D1. They work fine as plain digital inputs (the single-stick example has used them for 11 years); just don't use `Serial1` in your sketch.
+* Stick 2 runs D6–D10 contiguously, then jumps to D16 (the MOSI pin) for Button 2, since there's no clean D11 next to D10 on the Pro Micro. D16 is fine as a digital input.
+
+On an Arduino Leonardo the broken-out pins differ — it exposes D0–D13 plus A0–A5, but not D14–D16 as labelled header pins (MOSI/MISO/SCK are on the ICSP header). Stick 2's D6–D10 are fine on a Leonardo; only the D16 (Button 2) entry needs to change — map it to a free pin such as D11 or A0 and update the example's `#define`s to match. Or just pick any six free digital pins for Stick 2.
+
+Any free digital pins will do; the ATmega32U4 boards have plenty for two sticks (2 × 6 = 12 pins).
+
+Each stick is a genuinely separate USB HID interface (its own endpoint), not a report id inside a shared interface. This matters: hosts that enumerate by device rather than by HID collection — VirtualC64 on macOS, for one — only see the second stick when it is its own interface. The library bypasses the stock single-interface Arduino HID layer and plugs in one interface per stick to make this work, verified showing two independent joysticks in VirtualC64.
+
+The original single-stick limitation was in the library, not the platform. Two sticks use CDC serial plus two HID endpoints (5 of the ATmega32U4's 7 usable endpoints), so the board can drive up to about four sticks before running out.
 
 If you need more information, look at the source code for the library (it's fairly simple), or raise an issue on GitHub.
 

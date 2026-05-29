@@ -27,20 +27,65 @@
 
 #include <AtariStick.h>
 
-// Constructor, takes a contact debounce timeout as the only parameter.
+// Constructor. Takes a contact debounce timeout. Each instance plugs itself in
+// as its own USB HID interface, so the host sees one independent joystick per
+// instance -- declare one AtariStick per physical stick.
 AtariStick::AtariStick(unsigned long debounceDelay)
+	: PluggableUSBModule(1, 1, epType)
 {
 	delay = debounceDelay;
+	epType[0] = EP_TYPE_INTERRUPT_IN;
+	PluggableUSB().plug(this);
+}
 
-	// Setup HID report structure globally
-	static bool usbInit = false;
-	
-	if (!usbInit)
+// Emit this interface's interface + HID + endpoint descriptor during USB setup.
+int AtariStick::getInterface(uint8_t* interfaceCount)
+{
+	*interfaceCount += 1;
+	HIDDescriptor desc =
 	{
-	 	static HIDSubDescriptor node(ataristick_hid_report_desc, sizeof(ataristick_hid_report_desc));
-		HID().AppendDescriptor(&node);
-		usbInit = true;
+		D_INTERFACE(pluggedInterface, 1,
+			USB_DEVICE_CLASS_HUMAN_INTERFACE, HID_SUBCLASS_NONE, HID_PROTOCOL_NONE),
+		D_HIDREPORT(sizeof(ataristick_hid_report_desc)),
+		D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint),
+			USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01)
+	};
+	return USB_SendControl(0, &desc, sizeof(desc));
+}
+
+// Serve the HID report descriptor, but only for this instance's interface.
+int AtariStick::getDescriptor(USBSetup& setup)
+{
+	if (setup.bmRequestType != REQUEST_DEVICETOHOST_STANDARD_INTERFACE) return 0;
+	if (setup.wValueH != HID_REPORT_DESCRIPTOR_TYPE) return 0;
+	if (setup.wIndex != pluggedInterface) return 0;
+	return USB_SendControl(TRANSFER_PGM, ataristick_hid_report_desc,
+		sizeof(ataristick_hid_report_desc));
+}
+
+// Acknowledge the standard HID class control requests for this interface.
+bool AtariStick::setup(USBSetup& setup)
+{
+	if (pluggedInterface != setup.wIndex) return false;
+
+	uint8_t request = setup.bRequest;
+	uint8_t requestType = setup.bmRequestType;
+
+	if (requestType == REQUEST_DEVICETOHOST_CLASS_INTERFACE)
+	{
+		if (request == HID_GET_REPORT)   return true;
+		if (request == HID_GET_PROTOCOL) return true;
+		if (request == HID_GET_IDLE)     return true;
 	}
+
+	if (requestType == REQUEST_HOSTTODEVICE_CLASS_INTERFACE)
+	{
+		if (request == HID_SET_PROTOCOL) return true;
+		if (request == HID_SET_IDLE)     return true;
+		if (request == HID_SET_REPORT)   return true;
+	}
+
+	return false;
 }
 
 // Assign a digital input pin to a joystick function.
@@ -131,6 +176,6 @@ void AtariStick::sendState()
 		report.y = 0;
 	}
 	
-	// Send the report.
-	HID().SendReport(ATARISTICK_REPORT_ID, &report, sizeof(ataristick_report_t));
+	// Send the report on this interface's own interrupt-IN endpoint.
+	USB_Send(pluggedEndpoint | TRANSFER_RELEASE, &report, sizeof(ataristick_report_t));
 }
