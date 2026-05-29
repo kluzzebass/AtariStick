@@ -57,16 +57,16 @@ Both DB-9 grounds share the Arduino GND rail. DB-9 pin 5 is unused, and pin 7 (+
 
 **This table is for the SparkFun Pro Micro pinout, not the Leonardo.** The silkscreen labels and the D16 mapping below are Pro Micro specific:
 
-* On the silkscreen, `RXI` is D0 and `TXO` is D1. They work fine as plain digital inputs (the single-stick example has used them for 11 years); just don't use `Serial1` in your sketch.
+* On the silkscreen, `RXI` is D0 and `TXO` is D1. They work fine as plain digital inputs; just don't use `Serial1` in your sketch.
 * Stick 2 runs D6–D10 contiguously, then jumps to D16 (the MOSI pin) for Button 2, since there's no clean D11 next to D10 on the Pro Micro. D16 is fine as a digital input.
 
 On an Arduino Leonardo the broken-out pins differ — it exposes D0–D13 plus A0–A5, but not D14–D16 as labelled header pins (MOSI/MISO/SCK are on the ICSP header). Stick 2's D6–D10 are fine on a Leonardo; only the D16 (Button 2) entry needs to change — map it to a free pin such as D11 or A0 and update the example's `#define`s to match. Or just pick any six free digital pins for Stick 2.
 
 Any free digital pins will do; the ATmega32U4 boards have plenty for two sticks (2 × 6 = 12 pins).
 
-Each stick is a genuinely separate USB HID interface (its own endpoint), not a report id inside a shared interface. This matters: hosts that enumerate by device rather than by HID collection — VirtualC64 on macOS, for one — only see the second stick when it is its own interface. The library bypasses the stock single-interface Arduino HID layer and plugs in one interface per stick to make this work, verified showing two independent joysticks in VirtualC64.
+Each stick is its own USB HID interface with its own endpoint, rather than a report id inside a shared interface. Hosts that enumerate by device instead of by HID collection — VICE and VirtualC64 among them — only see the second stick this way. The library plugs in one interface per stick instead of using the stock single-interface Arduino HID layer.
 
-The original single-stick limitation was in the library, not the platform. Two sticks use CDC serial plus two HID endpoints (5 of the ATmega32U4's 7 usable endpoints), so the board can drive up to about four sticks before running out.
+Each stick uses one HID endpoint. With CDC serial taking 3 of the ATmega32U4's ~7 usable endpoints, that leaves room for about four sticks.
 
 If you need more information, look at the source code for the library (it's fairly simple), or raise an issue on GitHub.
 
