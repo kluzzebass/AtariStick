@@ -1,0 +1,32 @@
+#######################################
+# Syntax Coloring Map for AtariStick
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AtariStick	KEYWORD1
+StickFunc	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setPin	KEYWORD2
+update	KEYWORD2
+changed	KEYWORD2
+state	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+FUNC_UP	LITERAL1
+FUNC_DOWN	LITERAL1
+FUNC_LEFT	LITERAL1
+FUNC_RIGHT	LITERAL1
+FUNC_BTN1	LITERAL1
+FUNC_BTN2	LITERAL1
+FUNC_COUNT	LITERAL1
+ATARISTICK_REPORT_ID	LITERAL1
